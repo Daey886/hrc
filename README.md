@@ -1,7 +1,8 @@
 # HRC — Hermes Remote Control
 
-> 让 AI Agent（Hermes / Claude 等）**远程接管你的 Chrome / Edge 浏览器**的完整方案。
+> 让 AI Agent（Hermes / Claude 等）**远程接管你的浏览器**的完整方案。
 > 一个扩展 + 一个零依赖中转服务，把真实的浏览器变成 Agent 可编程的双手和眼睛。
+> 支持 **Chrome / Edge**（CDP 级控制）与 **Firefox**（WebExtensions 移植版）。
 
 <p align="center">
   <img src="extension/icon.png" width="128" alt="HRC icon"/>
@@ -34,11 +35,28 @@
 
 ### 1. 安装扩展
 
+**Chrome / Edge（CDP 版，推荐）**
+
 打开 `chrome://extensions`（Edge 为 `edge://extensions`）→ 右上角开启「开发者模式」→
 「加载解压缩的扩展」→ 选择本项目的 `extension/` 目录。
 
 > 扩展使用 `debugger` 权限，接管页面时浏览器顶部会出现
 > 「已开始调试此浏览器」的提示条，这是 CDP 的正常行为，可点击 ✕ 隐藏。
+
+**Firefox（WebExtensions 移植版）**
+
+打开 `about:debugging#/runtime/this-firefox` → 「临时载入附加组件」→
+选择 `extension-firefox/manifest.json`。
+（永久安装需在 [addons.mozilla.org](https://addons.mozilla.org/developers/) 签名，或使用 Firefox Developer Edition / Nightly 关闭签名校验：`xpinstall.signatures.required = false`）
+
+**两个版本差异：**
+
+| | Chrome/Edge 版 | Firefox 版 |
+|---|---|---|
+| 底层机制 | `chrome.debugger`（CDP） | `tabs.executeScript` + 合成 DOM 事件 |
+| 输入事件可信度 | `isTrusted: true`（与真人无异） | `isTrusted: false`（极少数强反自动化站点可能不认） |
+| "正在调试"提示条 | 有 | **无** |
+| 接口 / 协议 | 完全一致（同一 relay、同一 API） | 完全一致 |
 
 ### 2. 启动中转服务
 
@@ -150,12 +168,16 @@ python -I test_smoke.py     # 终端 2：自动开页→执行JS→截图→关�
 
 ```
 hrc/
-├── extension/            # Chrome/Edge 扩展 (Manifest V3)
+├── extension/            # Chrome/Edge 扩展 (Manifest V3, CDP)
 │   ├── manifest.json
 │   ├── background.js     # Service Worker：WS 客户端 + CDP 执行器
 │   ├── popup.html/js     # 设备名 & 服务器地址设置
 │   ├── icon.png / icon16.png
 │   └── icon.svg          # 图标源文件
+├── extension-firefox/    # Firefox 扩展 (Manifest V2, WebExtensions)
+│   ├── manifest.json
+│   ├── background.js     # 常驻后台页：WS 客户端 + 合成事件执行器
+│   └── popup.html/js
 ├── server/
 │   └── relay.js          # 零依赖中转服务 (WS 8765 / HTTP 8766)
 ├── skills/

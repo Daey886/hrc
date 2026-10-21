@@ -28,6 +28,11 @@ GET /status
 - 返回 `false` → 告诉用户：需要启动中转服务（`node <项目>/server/relay.js`）
   并确认浏览器扩展已启用（工具栏图标显示绿色 ON 徽章），不要盲目重试
 
+**设备名与浏览器对应关系**（帮助判断当前控制的是哪种浏览器）：
+- Chrome/Edge 版默认设备名：`Windows-PC` / `Mac` 等（用户可在弹窗自定义）
+- Firefox 版默认设备名以 `Firefox-` 开头
+- 多浏览器同时在线时，通过 `GET /devices` 的设备名 + UA 区分并按 `device` 参数路由
+
 多设备时用 `GET /devices` 查看在线设备列表；任何 POST 请求 body 中加
 `"device": "<设备名>"` 可指定目标设备；不指定时默认操作最近连接的设备。
 

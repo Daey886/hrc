@@ -389,7 +389,10 @@ const server = http.createServer(async (req, res) => {
           type: 'cdp', tabId, command: 'Runtime.evaluate',
           params: { expression: body.expression, returnByValue: true, awaitPromise: true }
         });
-        respond(res, 200, { ok: true, device: dn, result: r && r.result ? r.result.value : r });
+        // Chrome build: r.result.value ; Firefox build: r.result.value (same shape via evalInTab wrapper)
+        let value = r && r.result ? r.result.value : r;
+        // Firefox cmdType/cmdKey etc. may return {ok:true,...} objects; pass through
+        respond(res, 200, { ok: true, device: dn, result: value === undefined ? null : value });
         return;
       }
       case '/click': {
