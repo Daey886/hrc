@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Hermes Remote Control",
+  "version": "1.0.0",
+  "description": "Allow Hermes agent to remotely control the browser via CDP (Chrome DevTools Protocol).",
+  "permissions": [
+    "debugger",
+    "tabs",
+    "scripting",
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Hermes Remote Control",
+    "default_icon": {
+      "16": "icon16.png",
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "128": "icon.png"
+  }
+}
