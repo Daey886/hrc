@@ -32,6 +32,8 @@ const { URL } = require('url');
 
 const WS_PORT = process.env.WS_PORT || 8765;     // extensions connect here
 const HTTP_PORT = process.env.HTTP_PORT || 8766; // Hermes calls here
+const WS_HOST = process.env.WS_HOST || '127.0.0.1';   // set 0.0.0.0 to accept LAN extensions
+const HTTP_HOST = process.env.HTTP_HOST || '127.0.0.1'; // keep API loopback-only by default
 
 // ---------------- WebSocket (RFC 6455, server side) ----------------
 
@@ -514,9 +516,9 @@ wsServer.on('upgrade', (req, socket) => {
   conn.onclose = () => unregisterConn(conn);
 });
 
-wsServer.listen(WS_PORT, '127.0.0.1', () => {
-  console.log(`[WS]   listening for extensions on ws://127.0.0.1:${WS_PORT}`);
+wsServer.listen(WS_PORT, WS_HOST, () => {
+  console.log(`[WS]   listening for extensions on ws://${WS_HOST}:${WS_PORT}`);
 });
-server.listen(HTTP_PORT, '127.0.0.1', () => {
-  console.log(`[HTTP] API for Hermes on http://127.0.0.1:${HTTP_PORT}`);
+server.listen(HTTP_PORT, HTTP_HOST, () => {
+  console.log(`[HTTP] API for Hermes on http://${HTTP_HOST}:${HTTP_PORT}`);
 });
